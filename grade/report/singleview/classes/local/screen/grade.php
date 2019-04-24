@@ -32,6 +32,7 @@ use moodle_url;
 use pix_icon;
 use html_writer;
 use gradereport_singleview;
+use context_course;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -52,6 +53,9 @@ class grade extends tablelike implements selectable_items, filterable_items {
 
     /** @var bool $requirepaging True if there are more users than our limit. */
     private $requirespaging = true;
+    
+    /** @var array $extrafields Used for extra user fields */
+    private $extrafields = array();
 
     /**
      * True if $CFG->grade_overridecat is true
@@ -137,6 +141,9 @@ class grade extends tablelike implements selectable_items, filterable_items {
             return;
         }
 
+        $context = context_course::instance($this->courseid);
+        $this->extrafields = get_extra_user_fields($context);
+
         $params = array(
             'id' => $this->itemid,
             'courseid' => $this->courseid
@@ -162,15 +169,22 @@ class grade extends tablelike implements selectable_items, filterable_items {
      * @return array
      */
     public function original_headers() {
-        return array(
+        $headers = array(
             '', // For filter icon.
-            get_string('firstname') . ' (' . get_string('alternatename') . ') ' . get_string('lastname'),
+            get_string('firstname') . ' (' . get_string('alternatename') . ') ' . get_string('lastname')
+        );
+        foreach ($this->extrafields as $field) {
+            $headers[] = get_user_field_name($field);
+        }
+        array_push(
+            $headers,
             get_string('range', 'grades'),
             get_string('grade', 'grades'),
             get_string('feedback', 'grades'),
             $this->make_toggle_links('override'),
             $this->make_toggle_links('exclude')
         );
+        return $headers;
     }
 
     /**
@@ -212,14 +226,19 @@ class grade extends tablelike implements selectable_items, filterable_items {
         $line = array(
             $OUTPUT->action_icon($this->format_link('user', $item->id), new pix_icon('t/editstring', $iconstring)),
             $OUTPUT->user_picture($item, array('visibletoscreenreaders' => false)) .
-            html_writer::link($url, $fullname),
-            $this->item_range()
+            html_writer::link($url, $fullname)
         );
         $lineclasses = array(
             "action",
-            "user",
-            "range"
+            "user"
         );
+        foreach ($this->extrafields as $field) {
+            $line[] = $item->{$field};
+            $lineclasses[] = null;
+        }
+        array_push($line, $this->item_range());
+        array_push($lineclasses, "range");
+        
         $outputline = array();
         $i = 0;
         foreach ($line as $key => $value) {
