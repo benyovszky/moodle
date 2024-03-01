@@ -113,7 +113,21 @@ class batch_set_marker_allocation_viewed extends base {
         }
     }
 
-    public static function get_other_mapping() {
+    /**
+     * Get objectid mapping
+     *
+     * @return array of parameters for object mapping.
+     */
+    public static function get_objectid_mapping() {
+        return array('db' => 'assign', 'restore' => 'assign');
+    }
+
+    /**
+     * Mapping for other fields during restore
+     *
+     * @return array
+     */
+     public static function get_other_mapping() {
         $othermapped = array();
         $othermapped['assignid'] = array('db' => 'assign', 'restore' => 'assign');
 
