@@ -106,7 +106,21 @@ class all_submissions_downloaded extends base {
         parent::validate_data();
     }
 
+    /**
+     * Get objectid mapping
+     *
+     * @return array of parameters for object mapping.
+     */
     public static function get_objectid_mapping() {
         return array('db' => 'assign', 'restore' => 'assign');
+    }
+
+    /**
+     * Mapping for other fields during restore
+     *
+     * @return bool
+     */
+    public static function get_other_mapping() {
+        return false;
     }
 }
