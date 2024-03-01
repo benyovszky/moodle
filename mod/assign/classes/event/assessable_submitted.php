@@ -115,10 +115,20 @@ class assessable_submitted extends base {
         }
     }
 
+    /**
+     * Get objectid mapping
+     *
+     * @return array of parameters for object mapping.
+     */
     public static function get_objectid_mapping() {
         return array('db' => 'assign_submission', 'restore' => 'submission');
     }
 
+    /**
+     * Mapping for other fields during restore
+     *
+     * @return bool
+     */
     public static function get_other_mapping() {
         // Nothing to map.
         return false;
