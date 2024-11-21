@@ -234,7 +234,7 @@ final class ip_utils {
      * @return bool
      */
     public static function is_ip_in_subnet_list($ip, $list, $delim = "\n") {
-        $list = explode($delim, $list);
+        $list = explode($delim, (string) $list);
         foreach ($list as $line) {
             $tokens = explode('#', $line);
             $subnet = trim($tokens[0]);
